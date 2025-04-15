@@ -1,1 +1,5 @@
-# Ocular-Disease-Recognition
+# Ocular Disease Recognition
+
+## Project Description
+
+## Tools Used
