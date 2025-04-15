@@ -127,7 +127,4 @@ This project aims to build a machine learning model to classify final ocular dia
 - **MySQL / Cassandra**
 - **OpenCV, TF-IDF, Word2Vec, BERT, ResNet/VGG**
 
----
-
-## 📁 Directory Structure (Planned)
 
