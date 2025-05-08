@@ -42,13 +42,19 @@ This project aims to build a machine learning model to classify final ocular dia
   - Use NLP techniques: TF-IDF, Word2Vec, or BERT embeddings to convert diagnostic text to numerical features
 
 - **Image Feature Extraction:**
-  - Use data augmentation to increase training diversity
   - Extract image embeddings using pre-trained CNNs (e.g., ResNet, VGG)
   - Use OpenCV for manual features (e.g., color histograms)
+
+## Image Feature Creation DAG
+![imageDAG](https://github.com/user-attachments/assets/445205c7-2c1a-4559-bea3-3132b5c57fed)
+
 
 - **Data Integration:**
   - Combine image, text, and structured features
   - Store processed data in MySQL or Cassandra for downstream use
+ ## Feature Joining DAG
+![feature_extraction_DAG](https://github.com/user-attachments/assets/601fe250-c233-4d1a-8c33-bd216adf609b)
+
 
 #### **Deliverables:**
 - Augmented dataset with feature-engineered attributes
@@ -129,11 +135,5 @@ This project aims to build a machine learning model to classify final ocular dia
 
 
 
-## Image Feature Creation DAG
-![imageDAG](https://github.com/user-attachments/assets/445205c7-2c1a-4559-bea3-3132b5c57fed)
-
-## Feature Joining DAG
-![feature_extraction_DAG](https://github.com/user-attachments/assets/601fe250-c233-4d1a-8c33-bd216adf609b)
 
 
-## Tools Used
