@@ -1,0 +1,11 @@
+/ Creating a Virtual Environment (keep diretcory in mind)
+python -m venv venv
+
+// Activating a Virtual Environment
+venv\Scripts\activate
+
+// Saving Dependencies
+pip freeze > requirements.txt
+
+//Deactivating
+deactivate
