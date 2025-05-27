@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CS179G</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+      border: 3px solid black;
+    }
+
+    .header {
+      height: 15vh;
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 3px solid black;
+      font-size: 2rem;
+      text-align: center;
+      padding: 0 1rem;
+    }
+
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      align-items: center;
+      border-bottom: 3px solid black;
+      padding: 10px 0;
+      font-weight: bold;
+    }
+
+    .nav a {
+      text-decoration: none;
+      color: black;
+      padding: 10px 20px;
+      margin: 5px;
+      border: 2px solid black;
+      border-radius: 5px;
+      background-color: #f0f0f0;
+      transition: background-color 0.3s;
+    }
+
+    .nav a:hover {
+      background-color: #ddd;
+    }
+
+    .section {
+      flex: 1;
+      overflow-y: auto;
+      padding: 2vw;
+    }
+
+    .section h3 {
+      margin-top: 0;
+    }
+
+    .section p {
+      margin-bottom: 1.5rem;
+      max-width: 100%;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 600px) {
+      .header {
+        font-size: 1.5rem;
+      }
+
+      .nav {
+        flex-direction: column;
+      }
+
+      .nav a {
+        width: 90%;
+        text-align: center;
+      }
+
+      .section {
+        padding: 5vw;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      logo / background image
+    </div>
+
+    <div class="nav">
+      <a href="{{ url_for('background') }}">Background</a>
+      <a href="{{ url_for('statistics') }}">Statistics</a>
+      <a href="{{ url_for('prediction') }}">Prediction</a>
+    </div>
+
+    <div class="section">
+      <h3>Data Source</h3>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua...
+      </p>
+
+      <h3>Tech Stack</h3>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua...
+      </p>
+
+      <h3>Model Training</h3>
+      <p>
+        ....etc
+      </p>
+    </div>
+  </div>
+</body>
+</html>

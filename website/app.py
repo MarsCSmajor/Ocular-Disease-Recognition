@@ -1,28 +1,51 @@
-from flask import Flask, render_template, request, url_for
+
+from flask import Flask, render_template
 
 app = Flask(__name__)
 
-@app.route("/")
+@app.route('/')
+def home():
+    return render_template('index.html')
+
+@app.route('/background')
 def background():
-    return render_template("background.html", 
-                           background = url_for('background'),
-                           statistics = url_for('stats'), 
-                           prediction = url_for('prediction'))
+    return render_template('background.html')
 
-@app.route("/statistics")
-def stats():
-    return render_template("background.html", 
-                           background = url_for('background'),
-                           statistics = url_for('stats'), 
-                           prediction = url_for('prediction')) 
+@app.route('/statistics')
+def statistics():
+    return render_template('statistics.html')
 
-@app.route("/prediction")
+@app.route('/prediction')
 def prediction():
-    return render_template("background.html", 
-                           background = url_for('background'),
-                           statistics = url_for('stats'), 
-                           prediction = url_for('prediction')) 
+    return render_template('prediction.html')
 
+if __name__ == '__main__':
+    app.run(debug=True)
+
+# from flask import Flask, render_template, request, url_for
+
+# app = Flask(__name__)
+
+# @app.route("/")
+# def background():
+#     return render_template("background.html", 
+#                            background = url_for('background'),
+#                            statistics = url_for('stats'), 
+#                            prediction = url_for('prediction'))
+
+# @app.route("/statistics")
+# def stats():
+#     return render_template("background.html", 
+#                            background = url_for('background'),
+#                            statistics = url_for('stats'), 
+#                            prediction = url_for('prediction')) 
+
+# @app.route("/prediction")
+# def prediction():
+#     return render_template("background.html", 
+#                            background = url_for('background'),
+#                            statistics = url_for('stats'), 
+#                            prediction = url_for('prediction')) 
 
 
 
