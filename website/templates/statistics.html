@@ -1,8 +1,58 @@
 <!DOCTYPE html>
 <html>
-<head><title>Prediction</title></head>
+<head><title>Background</title></head>
 <body>
-  <h1>Prediction Page</h1>
-  <a href="{{ url_for('home') }}">Back to Home</a>
+  <h1>Background Page</h1>
+  <p>This is the background information.</p>
+  
+
+
+  
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <style>
+    .home-button {
+  position: fixed;
+  top: 30px;
+  right: 30px; /* change to `left` for top-left corner */
+  padding: 10px 15px;
+  background-color: #333;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 20px;
+  z-index: 999;
+  transition: background-color 0.3s;
+  }
+
+  .home-button:hover {
+    background-color: #555;
+  }
+  </style>
+  <a href="{{ url_for('home') }}" class="home-button">Home</a>
 </body>
 </html>
