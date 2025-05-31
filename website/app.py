@@ -1,13 +1,18 @@
 
 from flask import Flask, render_template
+from flask import request, url_for
+from werkzeug.utils import secure_filename
+import os
 
 app = Flask(__name__)
 
-@app.route('/')
-def home():
-    return render_template('index.html')
+UPLOAD_FOLDER = 'static/uploads'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-@app.route('/background')
+
+
+@app.route('/')
 def background():
     return render_template('background.html')
 
@@ -15,9 +20,23 @@ def background():
 def statistics():
     return render_template('statistics.html')
 
-@app.route('/prediction')
+@app.route('/prediction', methods=['GET', 'POST'])
 def prediction():
-    return render_template('prediction.html')
+    image_url = None
+    diagnostic_text = None
+
+    if request.method == 'POST':
+        if 'image' in request.files:
+            image = request.files['image']
+            diagnostic_text = request.form.get('diagnostic')
+            if image.filename != '':
+                filename = secure_filename(image.filename)
+                filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                image.save(filepath)
+                image_url = url_for('static', filename=f'uploads/{filename}')
+    
+    return render_template('prediction.html', image_url=image_url, diagnostic=diagnostic_text)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
