@@ -3,6 +3,8 @@ from flask import Flask, render_template
 from flask import request, url_for
 from werkzeug.utils import secure_filename
 import os
+import datetime
+import csv
 
 
 from eval import model_image_prediction 
@@ -22,6 +24,72 @@ def background():
 @app.route('/statistics')
 def statistics():
     return render_template('statistics.html')
+
+
+@app.route('/submit_statistics', methods=['POST'])
+def submit_statistics():
+    csv_file = 'submissions.csv'
+
+    # Handle form fields first
+    verification_code = request.form.get('verification_code')
+
+    if verification_code != '222':
+        return render_template('thankyou.html', 
+                               message="Submission rejected: invalid verification code.")
+
+    # Handle uploaded images
+    left_eye_file = request.files.get('left_eye_image')
+    right_eye_file = request.files.get('right_eye_image')
+
+    # Handle form fields
+    patient_age = request.form.get('patient_age')
+    left_diagnosis = request.form.get('left_diagnosis')
+    right_diagnosis = request.form.get('right_diagnosis')
+    left_notes = request.form.get('left_notes')
+    right_notes = request.form.get('right_notes')
+    verification_code = request.form.get('verification_code')
+
+    # Filenames and paths
+    left_eye_filename = None
+    right_eye_filename = None
+
+    if left_eye_file and left_eye_file.filename != '':
+        left_eye_filename = secure_filename(f"left_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}_{left_eye_file.filename}")
+        left_eye_path = os.path.join(app.config['UPLOAD_FOLDER'], left_eye_filename)
+        left_eye_file.save(left_eye_path)
+
+    if right_eye_file and right_eye_file.filename != '':
+        right_eye_filename = secure_filename(f"right_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}_{right_eye_file.filename}")
+        right_eye_path = os.path.join(app.config['UPLOAD_FOLDER'], right_eye_filename)
+        right_eye_file.save(right_eye_path)
+
+    # Append to CSV
+    with open(csv_file, mode='a', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        if file.tell() == 0:
+            writer.writerow([
+                'timestamp', 'patient_age', 
+                'left_eye_filename', 'right_eye_filename',
+                'left_diagnosis', 'right_diagnosis',
+                'left_notes', 'right_notes',
+                'verification_code'
+            ])
+
+        writer.writerow([
+            datetime.datetime.now().isoformat(),
+            patient_age,
+            left_eye_filename,
+            right_eye_filename,
+            left_diagnosis,
+            right_diagnosis,
+            left_notes,
+            right_notes,
+            verification_code
+        ])
+
+    # Redirect or render a thank you page
+    return render_template('thankyou.html', patient_age=patient_age)
+
 
 @app.route('/prediction', methods=['GET', 'POST'])
 def prediction():

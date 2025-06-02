@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>{{ message if message else "Thank You" }}</title>
+</head>
+<body>
+  <h1>{{ message if message else "Thank you for your submission!" }}</h1>
+
+  <a href="{{ url_for('statistics') }}">Back to Statistics</a>
+</body>
+</html>
