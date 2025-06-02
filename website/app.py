@@ -3,11 +3,12 @@ from flask import Flask, render_template
 from flask import request, url_for
 from werkzeug.utils import secure_filename
 import os
+import subprocess
 import datetime
 import csv
 
 
-from eval import model_image_prediction 
+from eval import model_image_prediction
 
 app = Flask(__name__)
 
@@ -96,6 +97,7 @@ def prediction():
     image_url = None
     diagnostic_text = None
     diagnostic_model = None
+    eye = None
     
     prediction = None
     if request.method == 'POST':
@@ -110,8 +112,7 @@ def prediction():
 
             if not diagnostic_text:
                 diagnostic_model = model_image_prediction(model_path="image_model_tf.keras",image_path=filepath)
-            else:
-                t = "this will go to the second model that has the text input"
+            
                 
 
     return render_template('prediction.html', image_url=image_url, diagnostic=diagnostic_text,diagnostic_on_model = diagnostic_model)

@@ -1,9 +1,10 @@
-from tensorflow import keras
-import tensorflow as tf
-import numpy as np
 
 
 def model_image_prediction(model_path,image_path):
+    from tensorflow import keras
+    import tensorflow as tf
+    import numpy as np
+
     classes = ['Normal', 'Retinal Vascular', 'Optic Nerve', 'Lens', 'Macular/Retinal', 'Other']
 
     model = keras.models.load_model(model_path)
@@ -29,6 +30,5 @@ def model_image_prediction(model_path,image_path):
     class_predict = np.argmax(predict[0]) # this will give you a number 
 
     return classes[class_predict]
-
 
 
