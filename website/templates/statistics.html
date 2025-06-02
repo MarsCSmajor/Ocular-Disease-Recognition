@@ -224,14 +224,16 @@
       <div id="modal1" class="modal">
         <div class="modal-content">
           <span class="close" onclick="closeModal('modal1')">&times;</span>
-          <h3>Patient Demographics</h3>
-          <p>
-            - 1,500 unique patients<br>
-            - Age range: 18–85<br>
-            - 48% Male, 52% Female<br>
-            - Average age: 54.2<br><br>
-            All patient data was anonymized and IRB-approved.
-          </p>
+          <h3>Patient Demographics (from MySQL)</h3>
+          {% if sex_data %}
+            <ul>
+              {% for row in sex_data %}
+                <li>{{ row["Patient Sex"] }}: {{ row["count"] }}</li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p>No data available.</p>
+          {% endif %}
         </div>
       </div>
 
