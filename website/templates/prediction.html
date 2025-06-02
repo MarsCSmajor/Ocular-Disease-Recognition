@@ -127,6 +127,35 @@
               <input type="text" id="diagnostic" name="diagnostic" placeholder="(optional) insert diagnostic" style="width: 100%; padding: 8px;">
             </label>
           </div>
+          <div style="margin-bottom: 15px;">
+            <label for="eye">(required if diagnostic entered):</label>
+            <select id="eye" name="eye" required style="width: 100%; padding: 8px; margin-top: 5px;">
+              <option value="" disabled selected>Which side of the side</option>
+              <option value="left">Left</option>
+              <option value="right">Right</option>
+            </select>
+          </div>
+          <script>
+          const diagnosticInput = document.getElementById('diagnostic');
+          const eyeSelect = document.getElementById('eye');
+
+          diagnosticInput.addEventListener('input', () => {
+            const hasDiagnostic = diagnosticInput.value.trim() !== '';
+            if (hasDiagnostic) {
+              eyeSelect.setAttribute('required', 'required');
+            } else {
+              eyeSelect.removeAttribute('required');
+            }
+          });
+
+          // Optional: validate before submission in case of browser inconsistencies
+          document.querySelector('form').addEventListener('submit', function (e) {
+            if (diagnosticInput.value.trim() !== '' && eyeSelect.value === '') {
+              alert("Please select 'left' or 'right' since diagnostic is entered.");
+              e.preventDefault();
+            }
+          });
+        </script>
     
           <button type="submit">Upload</button>
         </form>
