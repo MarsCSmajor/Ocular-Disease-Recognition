@@ -127,15 +127,15 @@
               <input type="text" id="diagnostic" name="diagnostic" placeholder="(optional) insert diagnostic" style="width: 100%; padding: 8px;">
             </label>
           </div>
-          <!-- <div style="margin-bottom: 15px;">
+          <div style="margin-bottom: 15px;">
             <label for="eye">(required if diagnostic entered):</label>
             <select id="eye" name="eye" required style="width: 100%; padding: 8px; margin-top: 5px;">
-              <option value="" disabled selected>Which side of the side</option>
+              <option value="" disabled selected>Which eye</option>
               <option value="left">Left</option>
               <option value="right">Right</option>
             </select>
-          </div> -->
-          <!-- <script>
+          </div> 
+           <script>
           const diagnosticInput = document.getElementById('diagnostic');
           const eyeSelect = document.getElementById('eye');
 
@@ -155,7 +155,7 @@
               e.preventDefault();
             }
           });
-        </script> -->
+        </script>
     
           <button type="submit">Upload</button>
         </form>
@@ -163,10 +163,14 @@
     
       {% if image_url %}
         <h3>Here is the uploaded information</h3>
+        {% if eye %}
+          <p>Eye Selected: {{ eye }}</p>
+        {% endif %}
         <p>Diagnostic Entered: {{ diagnostic if diagnostic else "None" }}</p>
         <p>Image Uploaded: </p>
         <img src="{{ image_url }}" alt="Uploaded Image" width="300">    
       {% endif %}
+
 
       <h3>Here is the output</h3>
       {% if diagnostic_on_model %}

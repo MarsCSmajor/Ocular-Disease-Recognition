@@ -1,6 +1,7 @@
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Recommended GPU disabling method
 from flask import Flask, render_template, request, url_for
 from werkzeug.utils import secure_filename
-import os
 import datetime
 import pandas as pd
 import cv2
@@ -14,11 +15,20 @@ from sqlalchemy import create_engine
 # Optional imports – include only if needed
 import subprocess
 import csv
+from pyspark.sql import SparkSession
+from pyspark.ml.feature import Word2VecModel
 
+# spark = SparkSession.builder.appName("website").getOrCreate()
 
-
+spark = SparkSession.builder \
+    .appName("Word2VecServing") \
+    .master("local[*]") \
+    .getOrCreate()
 
 app = Flask(__name__)
+
+
+# def word2vec(text, eye:bool):
 
 
 scaler = joblib.load('scaler.save')  # Used only for ResNet features
@@ -26,7 +36,15 @@ model_with_word2vec = tf.keras.models.load_model('image_word_model_tf.keras')
 model_without_word2vec = tf.keras.models.load_model('image_model_tf.keras')
 resnet_model = ResNet50(weights='imagenet', include_top=False, pooling='avg')
 # tf.config.set_visible_devices([], 'GPU')  # Optional: disable GPU
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Recommended GPU disabling method
+# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Recommended GPU disabling method
+
+
+
+
+left_w2v_model = Word2VecModel.load("model_trained/word2vec_model_left_eye")
+right_w2v_model = Word2VecModel.load("model_trained/word2vec_model_right_eye")
+
+
 def extract_features_from_image(img):
     """Extracts features from image using ResNet and histogram methods."""
     # ResNet feature extraction
@@ -84,9 +102,28 @@ def predict_image_class(image_path, word2vec_feats=None):
 
 
 
+def get_word2vec_feature(diagnostic, eye):
+    if not diagnostic:
+        return None
 
+    try:
+        tokens = diagnostic.strip().lower().split()
+        df = spark.createDataFrame([(tokens,)], ["text"])
 
-engine = create_engine("mysql+pymysql://teammate:2025@localhost/tabular_data_stats")
+        if eye == 'left':
+            transformed = left_w2v_model.transform(df).collect()
+        elif eye == 'right':
+            transformed = right_w2v_model.transform(df).collect()
+        else:
+            return None
+
+        return np.array(transformed[0]['text'], dtype=np.float32)
+
+    except Exception as e:
+        print(f"[Word2Vec Error]")
+        return None
+
+# engine = create_engine("mysql+pymysql://teammate:2025@localhost/tabular_data_stats")
 
 
 UPLOAD_FOLDER = 'static/uploads'
@@ -181,25 +218,31 @@ def prediction():
     image_url = None
     diagnostic_text = None
     diagnostic_model = None
+    features_word2vec = None
+    eye = None
     if request.method == 'POST':
         if 'image' in request.files:
             image = request.files['image']
             diagnostic_text = request.form.get('diagnostic')
+            eye = request.form.get('eye')
             if image.filename != '':
                 filename = secure_filename(image.filename)
                 filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                 image.save(filepath)
                 image_url = url_for('static', filename=f'uploads/{filename}')
 
-            # if not diagnostic_text:
-            #     diagnostic_model = model_image_prediction(model_path="image_model_tf.keras",image_path=filepath)
+            # if diagnostic_text:
+            #     if eye == 'left':
+            #         print("left eye was found")
+            #     #calls the word2vec function for the left eye
+            #     else:
+            #         print(f"{eye} was found")
+            #         # calls the word2vec for the right eye
 
-            # predicted_class, predicted_prob = predict_image_class(image_path=filepath,word2vec_feats=diagnostic_text)
-            # pred_label = label_encoder.inverse_transform([predicted_class])[0]
 
             try:
-                
-                predicted_class, predicted_prob = predict_image_class(image_path=filepath, word2vec_feats=None)
+                features_word2vec = get_word2vec_feature(diagnostic_text, eye)
+                predicted_class, predicted_prob = predict_image_class(image_path=filepath, word2vec_feats=features_word2vec)
                 pred_label = label_encoder.inverse_transform([predicted_class])[0]
                 diagnostic_model = f"{pred_label}, with a {np.max(predicted_prob):.3f} confidence"
                 diagnostic_text = str(diagnostic_text)
@@ -210,8 +253,9 @@ def prediction():
             
                 
 
-    return render_template('prediction.html', image_url=image_url, diagnostic=diagnostic_text,diagnostic_on_model = diagnostic_model)
+    return render_template('prediction.html', image_url=image_url, diagnostic=diagnostic_text,diagnostic_on_model = diagnostic_model, eye = eye)
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # app.run(debug=True)
+    app.run(host='0.0.0.0',port=5000,debug=False, use_reloader=False)
