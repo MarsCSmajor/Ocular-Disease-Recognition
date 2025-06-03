@@ -15,12 +15,17 @@ UPLOAD_FOLDER = 'static/uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+
+
 # Load assets once at startup
 scaler = joblib.load('scaler.save')  # Used only for ResNet features
 model_with_word2vec = tf.keras.models.load_model('image_word_model_tf.keras')
 model_without_word2vec = tf.keras.models.load_model('image_model_tf.keras')
 resnet_model = ResNet50(weights='imagenet', include_top=False, pooling='avg')
-tf.config.set_visible_devices([], 'GPU')  # Optional: disable GPU
+# tf.config.set_visible_devices([], 'GPU')  # Optional: disable GPU
+# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Recommended GPU disabling method
+
+
 
 def extract_features_from_image(img):
     """Extracts features from image using ResNet and histogram methods."""
@@ -96,7 +101,7 @@ def prediction():
     if request.method == 'POST':
         diagnostic_text = request.form.get('diagnostic')
         print("[DEBUG] Diagnostic text received:", diagnostic_text)
-        word2vec_feats = None  # Replace with actual demographic embedding if available
+        word2vec_feats = diagnostic_text  # Replace with actual demographic embedding if available
 
         if 'image' in request.files:
             image = request.files['image']
