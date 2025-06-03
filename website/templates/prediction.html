@@ -128,9 +128,8 @@
             </label>
           </div>
           <div style="margin-bottom: 15px;">
-            <label for="eye">(required if diagnostic entered):</label>
             <select id="eye" name="eye" required style="width: 100%; padding: 8px; margin-top: 5px;">
-              <option value="" disabled selected>Which eye</option>
+              <option value="" disabled selected>select eye</option>
               <option value="left">Left</option>
               <option value="right">Right</option>
             </select>
@@ -163,9 +162,7 @@
     
       {% if image_url %}
         <h3>Here is the uploaded information</h3>
-        {% if eye %}
-          <p>Eye Selected: {{ eye }}</p>
-        {% endif %}
+        <p>Eye Selected: {{ eye if eye else "None" }}</p>
         <p>Diagnostic Entered: {{ diagnostic if diagnostic else "None" }}</p>
         <p>Image Uploaded: </p>
         <img src="{{ image_url }}" alt="Uploaded Image" width="300">    
