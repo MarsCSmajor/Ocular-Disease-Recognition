@@ -201,7 +201,7 @@ def prediction():
                 
                 predicted_class, predicted_prob = predict_image_class(image_path=filepath, word2vec_feats=None)
                 pred_label = label_encoder.inverse_transform([predicted_class])[0]
-                diagnostic_model = f"Disease: {pred_label}, with a {predicted_prob} confidence"
+                diagnostic_model = f"{pred_label}, with a {np.max(predicted_prob):.3f} confidence"
                 diagnostic_text = str(diagnostic_text)
 
             except Exception as e:
