@@ -43,7 +43,8 @@
       padding: 10px 0;
       font-weight: bold;
     }
-.nav a {
+
+    .nav a {
       text-decoration: none;
       color: black;
       padding: 10px 20px;
@@ -215,48 +216,119 @@
         <div class="box" onclick="alert('Box 2 clicked')">Model Accuracy</div>
         <div class="box" onclick="alert('Box 3 clicked')">Dataset Info</div> -->
 
-        <div class="box" onclick="openModal('modal1')">Patient Demographics</div>
-        <div class="box" onclick="openModal('modal2')">Model Accuracy</div>
-        <div class="box" onclick="openModal('modal3')">Dataset Composition</div>
+        <div class="box" onclick="openModal('modal1')">Patient Sample Count</div>
+        <div class="box" onclick="openModal('modal2')">Patient Demographics</div>
+        <div class="box" onclick="openModal('modal3')">Dataset Overview</div>
       </div>
 
       <!-- Modals (Hidden by default) -->
       <div id="modal1" class="modal">
         <div class="modal-content">
           <span class="close" onclick="closeModal('modal1')">&times;</span>
-          <h3>Patient Demographics (from MySQL)</h3>
-          <p>
-            - Left Eye: 87.3% accuracy<br>
-            - Right Eye: 85.9% accuracy<br>
-            - Combined: 89.1% AUC<br><br>
-            Model performance evaluated on a balanced test set of 500 cases.
-          </p>
+	  <h3>Patient Sample Count</h3>
+	  {% if sex_data %}
+	  	<ul>
+			{% for row in sex_data %}
+				<li>{{ row["Patient Sex"] }}: {{ row["count"] }}</li>
+			{% endfor %}
+		</ul>
+	  {% else %}
+		<p>No data available.</p>
+	  {% endif %}
         </div>
       </div>
 
       <div id="modal2" class="modal">
         <div class="modal-content">
           <span class="close" onclick="closeModal('modal2')">&times;</span>
-          <h3>Model Accuracy</h3>
-          <p>
-            - Left Eye: 87.3% accuracy<br>
-            - Right Eye: 85.9% accuracy<br>
-            - Combined: 89.1% AUC<br><br>
-            Model performance evaluated on a balanced test set of 500 cases.
-          </p>
+	  <h3>Patient Demographics</h3>
+	  {% if diag_sex_data %}
+	  	<table>
+			<tr>
+				<th>Sex</th>
+				{% for key in diag_sex_data[0].keys() if key != "Patient Sex" %}
+					<th>{{ key.replace("Total_", "") }}</th>
+				{% endfor %}
+			</tr>
+			{% for row in diag_sex_data %}
+			 <tr>
+				 <td>{{ row["Patient Sex"] }}</td>
+				 {% for key in row if key != "Patient Sex" %}
+				  <td>{{ row[key] }}</td>
+			         {% endfor %}
+			 </tr>
+			{% endfor %}
+		</table>
+	 {% else %}
+	 	<p>No data available.</p>
+	 {% endif %}
+	 
+	<h3 style="margin-top: 2rem;">Diagnosis Breakdown by Age Group</h3>
+	{% if diag_age_data %}
+	 <table>
+		<tr>
+			<th>Age Group</th>
+			{% for key in diag_age_data[0].keys() if key != "Age Group" %}
+				<th>{{ key.replace("Total_", "") }}</th>
+			{% endfor %}
+		</tr>
+		{% for row in diag_age_data %}
+		 <tr>
+			<td>{{ row["Age Group"] }}</td>
+			{% for key in row if key != "Age Group" %}
+				<td>{{ row[key] }}</td>
+			{% endfor %}
+		 </tr>
+		{% endfor %}
+	 </table>
+	{% else %}
+		<p>No data available.</p>
+	{% endif %}
         </div>
       </div>
 
       <div id="modal3" class="modal">
         <div class="modal-content">
           <span class="close" onclick="closeModal('modal3')">&times;</span>
-          <h3>Dataset Composition</h3>
+          <h3>Dataset Overview From Raw Data</h3>
           <p>
-            - Total Images: 3,200<br>
-            - Diseases Covered: AMD, Diabetic Retinopathy, Glaucoma, etc.<br>
-            - Sources: Kaggle, APTOS, Clinical Partners<br><br>
-            Images were preprocessed with histogram equalization and resizing.
-          </p>
+	    Our dataset includes a total of <strong>6,392 patient entries</strong>, representing 
+	    <strong>3,358 distinct individuals</strong> based on ID. Data is collected from diverse age groups, 
+	    with the largest representation from the <strong>51–60</strong> and <strong>61–70</strong> 
+	    brackets, comprising over half of all participants.
+	  </p>
+
+	  <p>
+	    The dataset includes balanced representation by gender: <strong>2,968 females</strong> and 
+	    <strong>3,424 males</strong>. Diagnosis data spans multiple ocular diseases such as:
+	    <em>N, D, G, C, A, H, M, and O</em>. The most common diagnosis is <strong>D (Diabetic Retinopathy)</strong>,
+	    followed closely by <strong>N</strong> and <strong>O</strong>.
+	  </p>
+
+	  <p>
+	    Diagnosis frequency varies across both age and gender:
+	    females show higher prevalence in <strong>diagnoses like A and M</strong>, while males
+	    trend higher in <strong>G and H</strong>. Patients aged <strong>71+</strong> show increased occurrences 
+	    of complex or multiple diagnoses.
+	  </p>
+
+	  <p>
+	    Notably, over <strong>1,000 patients</strong> have been diagnosed with more than one condition.
+	    Age groups <strong>51–70</strong> exhibit the highest average diagnosis count per patient, 
+	    with <strong>71–80</strong> having the highest overall at <em>1.22 diagnoses per person</em>.
+	  </p>
+
+	  <p>
+	    A logistic regression analysis was conducted to assess the predictive value of age and gender
+	    for each diagnosis. The strongest model performance was observed for diagnosis <strong>C</strong>, 
+	    achieving an AUC of <strong>0.727</strong>, indicating moderate predictive power.
+	  </p>
+
+	  <p>
+	    Data processing and analysis were performed using Apache Spark. On average, Spark handled
+	    up to <strong>100,000 records</strong> in under <strong>0.2 seconds</strong>, showcasing efficient
+	    scalability for large-scale medical datasets.
+	  </p>
         </div>
       </div>
 

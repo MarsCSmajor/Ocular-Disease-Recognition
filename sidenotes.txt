@@ -1,8 +1,0 @@
-// Activating a Virtual Environment
-venvsd\Scripts\activate
-
-// Saving Dependencies
-pip freeze > requirements.txt
-
-//Deactivating
-deactivate

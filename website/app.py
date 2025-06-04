@@ -2,7 +2,7 @@
 from flask import Flask, render_template
 from flask import request, url_for
 from werkzeug.utils import secure_filename
-#from sqlalchemy import create_engine
+from sqlalchemy import create_engine
 import pandas as pd
 import os
 import subprocess
@@ -13,13 +13,12 @@ import csv
 from eval import model_image_prediction
 
 app = Flask(__name__)
-#engine = create_engine("mysql+pymysql://teammate:2025@localhost/tabular_data_stats")
+engine = create_engine("mysql+pymysql://teammate:2025@localhost/tabular_data_stats?unix_socket=/home/csmajs/kgonz192/mysql.sock")
 
 
-# UPLOAD_FOLDER = 'static/uploads'
-# os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-# app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
+UPLOAD_FOLDER = 'static/uploads'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 
 @app.route('/')
@@ -28,14 +27,21 @@ def background():
 
 @app.route('/statistics')
 def statistics():
-    # Read from MySQL
-    #df_sex = pd.read_sql("SELECT * FROM distinct_patients_by_sex", con=engine)
+    df_sex = pd.read_sql("SELECT * FROM distinct_patients_by_sex", con=engine)
+    sex_data = df_sex.to_dict(orient='records')
 
-    # Convert to list of dicts for Jinja
-    #sex_data = df_sex.to_dict(orient='records')
+    df_diag_sex = pd.read_sql("SELECT * FROM distinct_diagnosis_by_sex", con=engine)
+    diag_sex_data = df_diag_sex.to_dict(orient='records')
 
-    #return render_template('statistics.html', sex_data=sex_data)
-    return render_template('statistics.html')
+    df_diag_age = pd.read_sql("SELECT * FROM distinct_diagnosis_by_age_group", con=engine)
+    diag_age_data = df_diag_age.to_dict(orient='records')
+
+    return render_template(
+            'statistics.html',
+            sex_data=sex_data,
+            diag_sex_data=diag_sex_data,
+            diag_age_data=diag_age_data
+    )
 
 
 
@@ -47,8 +53,7 @@ def submit_statistics():
     verification_code = request.form.get('verification_code')
 
     if verification_code != '222':
-        return render_template('thankyou.html', 
-                               message="Submission rejected: invalid verification code.")
+        return render_template('thankyou.html', message="Submission rejected: invalid verification code.")
 
     # Handle uploaded images
     left_eye_file = request.files.get('left_eye_image')
@@ -87,7 +92,7 @@ def submit_statistics():
                 'left_notes', 'right_notes',
                 'verification_code'
             ])
-
+            
         writer.writerow([
             datetime.datetime.now().isoformat(),
             patient_age,
@@ -98,8 +103,8 @@ def submit_statistics():
             left_notes,
             right_notes,
             verification_code
-        ])
-
+         ])
+    
     # Redirect or render a thank you page
     return render_template('thankyou.html', patient_age=patient_age)
 
